@@ -1,10 +1,14 @@
 .title {
+    font-size: 2em;
     color: #022;
     text-align: center;
 }
 
 .textarea {
-    width: 70%;
+    font-size: 1.5em;
+    display: block;
+    width: 80%;
+    max-width: 800px;
     margin: 0 auto;
 }
 
@@ -40,7 +44,10 @@
     }
     &-pressed {
         background-color: green;
-        border-radius: 25%;
+        border-radius: 20px;
+        &:hover {
+            background-color: green;
+        }
     }
     &-long {
         width: 13%;
@@ -48,4 +55,12 @@
     &-space {
         width: 45%
     }
+}
+
+.prompt {
+    width: fit-content;
+    margin: 0 auto;
+    font-size: 1.5em;
+    text-align: center;
+    margin-top: 15px;
 }

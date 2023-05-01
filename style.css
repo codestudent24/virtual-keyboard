@@ -1,10 +1,14 @@
 .title {
+  font-size: 2em;
   color: #022;
   text-align: center;
 }
 
 .textarea {
-  width: 70%;
+  font-size: 1.5em;
+  display: block;
+  width: 80%;
+  max-width: 800px;
   margin: 0 auto;
 }
 
@@ -41,11 +45,23 @@
 }
 .button-pressed {
   background-color: green;
-  border-radius: 25%;
+  border-radius: 20px;
+}
+.button-pressed:hover {
+  background-color: green;
 }
 .button-long {
   width: 13%;
 }
 .button-space {
   width: 45%;
+}
+
+.prompt {
+  width: -moz-fit-content;
+  width: fit-content;
+  margin: 0 auto;
+  font-size: 1.5em;
+  text-align: center;
+  margin-top: 15px;
 }/*# sourceMappingURL=style.css.map */
