@@ -48,19 +48,21 @@ const codes = [
 
 getLanguage()
 
+class Btn {
+  constructor (parent, char) {
+    const button = document.createElement('div')
+    button.classList.add('button')
+    button.innerHTML = char
+    parent.appendChild(button)
+    return button
+  }
+}
+
 function addRow (parent) {
   const row = document.createElement('div')
   row.classList.add('row')
   parent.appendChild(row)
   return row
-}
-
-function addButton (parent, char) {
-  const button = document.createElement('div')
-  button.classList.add('button')
-  button.innerHTML = char
-  parent.appendChild(button)
-  return button
 }
 
 function printText (id) {
@@ -150,12 +152,12 @@ for (let i = 0; i < 5; i++) {
   const row = addRow(keyboard)
   if (lang === 'en') {
     for (let j = 0; j < rowsEn[i].length; j++) {
-      const button = addButton(row, rowsEn[i][j])
+      const button = new Btn(row, rowsEn[i][j])
       button.id = codes[i][j]
     }
   } else {
     for (let j = 0; j < rowsRus[i].length; j++) {
-      const button = addButton(row, rowsRus[i][j])
+      const button = new Btn(row, rowsRus[i][j])
       button.id = codes[i][j]
     }
   }
