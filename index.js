@@ -46,6 +46,8 @@ const codes = [
     ['ControlLeft', 'MetaLeft', 'AltLeft', 'Space', 'AltRight', 'ArrowLeft', 'ArrowDown', 'ArrowRight', 'ControlRight']
 ];
 
+getLanguage();
+
 function addRow(parent) {
     const row = document.createElement('div');
     row.classList.add('row');
@@ -123,6 +125,8 @@ function switchLanguage() {
         lang = 'en';
         }
     buttonRows[3].children[11].innerHTML = '<i class="fa-solid fa-caret-up"></i>';
+
+    setLanguage(lang);
     }
 
 const title = document.createElement('h1');
@@ -146,9 +150,16 @@ document.querySelector('body').appendChild(textP);
 
 for (let i=0; i<5; i++) {
     const row = addRow(keyboard);
-    for (let j=0; j<rows_en[i].length; j++) {
-        const button = addButton(row, rows_en[i][j]);
-        button.id = codes[i][j]
+    if (lang === 'en') {
+        for (let j=0; j<rows_en[i].length; j++) {
+            const button = addButton(row, rows_en[i][j]);
+            button.id = codes[i][j]
+        }
+    } else {
+        for (let j=0; j<rows_rus[i].length; j++) {
+            const button = addButton(row, rows_rus[i][j]);
+            button.id = codes[i][j]
+        }
     }
 }
 
@@ -335,4 +346,12 @@ function capsLockPressed() {
         if (lang==='rus') buttonRows[0].children[0].textContent = 'Ё';
     }
     keyButtons.capsLock = !keyButtons.capsLock;
+    }
+
+    function setLanguage(language) {
+        localStorage.setItem('lang', language)
+    }
+
+    function getLanguage() {
+        lang = localStorage.getItem('lang') == undefined ? 'en' : localStorage.getItem('lang')
     }
