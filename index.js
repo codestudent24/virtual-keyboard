@@ -67,7 +67,7 @@ function printText(id) {
     if (id === 'Tab') {
         textArea.innerHTML+='\t';
         caretPosition++;
-    }  else if (id.slice(0, 5) === 'Shift' ||
+    } else if (id.slice(0, 5) === 'Shift' ||
                 id.slice(0, 3) === 'Alt' ||
                 id.slice(0, 7) === 'Control' ||
                 id === 'CapsLock') {
@@ -173,9 +173,10 @@ function keyPressed(event) {
     event.preventDefault();
     const code = event.code;
     console.log('keydown, code: ', code);
+    if (document.getElementById(code) === null) return;
     if (code === 'CapsLock') {
         document.getElementById(code).classList.toggle('button-pressed');
-        keyButtons.capsLock = !keyButtons.capsLock;
+        capsLockPressed();
     } else if (code.slice(0, 5) === 'Shift') {
         document.getElementById(code).classList.add('button-pressed');
         shiftPressed();
@@ -195,6 +196,7 @@ function keyPressed(event) {
 
 function keyUnpressed(event) {
     const code = event.code;
+    if (document.getElementById(code) === null) return;
     if (code === 'CapsLock') {
         return;
     } else if (code.slice(0, 5) === 'Shift') {
@@ -214,7 +216,11 @@ keyboard.addEventListener('mousedown', (event) => {
     if (target) {
         target.classList.add('button-pressed')
         if (target.id === 'ShiftLeft' ||
-        target.id === 'ShiftRight') {shiftPressed();}
+        target.id === 'ShiftRight') {
+            shiftPressed();
+        } else if (target.id === 'CapsLock') {
+            capsLockPressed();
+        }
         printText(target.id)
     } else return;
 })
@@ -222,9 +228,19 @@ keyboard.addEventListener('mousedown', (event) => {
 keyboard.addEventListener('mouseup', (event) => {
     const target = event.target.closest('.button')
     if (target) {
-        target.classList.remove('button-pressed')
-        if (target.id === 'ShiftLeft' ||
-        target.id === 'ShiftRight') {shiftUnpressed();}
+        if (target.id === 'CapsLock') {
+            if (keyButtons.capsLock) {
+                target.classList.add('button-pressed');
+            } else {
+                target.classList.remove('button-pressed');
+            }
+        } else if (target.id === 'ShiftLeft' ||
+        target.id === 'ShiftRight') {
+            target.classList.remove('button-pressed')
+            shiftUnpressed();
+        } else {
+            target.classList.remove('button-pressed')
+        }
     } else return;
 })
 
@@ -238,15 +254,30 @@ function shiftPressed() {
 
     if (lang === 'rus') {
         for (let i=0; i<4; i++) {
-            for (let j=0; j<rows_rus[i].length; j++) {
-                buttonRows[i].children[j].textContent=rows_rus_shifted[i][j];
+            if (keyButtons.capsLock) {
+                for (let j=1; j<rows_rus[i].length-1; j++) {
+                    buttonRows[i].children[j].textContent=rows_rus_shifted[i][j].toLowerCase();
+                }
+                buttonRows[0].children[0].textContent = 'ё';
+            } else {
+                for (let j=1; j<rows_rus[i].length-1; j++) {
+                    buttonRows[i].children[j].textContent=rows_rus_shifted[i][j];
+                }
+                buttonRows[0].children[0].textContent = 'Ё';
             }
         }
     } else {
         for (let i=0; i<4; i++) {
-            for (let j=0; j<rows_en[i].length; j++) {
-                buttonRows[i].children[j].textContent=rows_en_shifted[i][j];
+            if (keyButtons.capsLock) {
+                for (let j=1; j<rows_en[i].length-1; j++) {
+                    buttonRows[i].children[j].textContent=rows_en_shifted[i][j].toLowerCase();
+                }
+            } else {
+                for (let j=1; j<rows_en[i].length-1; j++) {
+                    buttonRows[i].children[j].textContent=rows_en_shifted[i][j];
+                }
             }
+            buttonRows[0].children[0].textContent = '~';
         }
         }
     buttonRows[3].children[11].innerHTML = '<i class="fa-solid fa-caret-up"></i>';
@@ -257,17 +288,51 @@ function shiftUnpressed() {
     keyButtons.shift = false;
     if (lang === 'rus') {
         for (let i=0; i<4; i++) {
-            for (let j=0; j<rows_rus[i].length; j++) {
-                buttonRows[i].children[j].textContent=rows_rus[i][j];
+            if (keyButtons.capsLock) {
+                for (let j=1; j<rows_rus[i].length-1; j++) {
+                    buttonRows[i].children[j].textContent=rows_rus[i][j].toUpperCase();
+                }
+                buttonRows[0].children[0].textContent = 'Ё';
+            } else {
+                for (let j=1; j<rows_rus[i].length-1; j++) {
+                    buttonRows[i].children[j].textContent=rows_rus[i][j];
+                }
+                buttonRows[0].children[0].textContent = 'ё';
             }
         }
     } else {
         for (let i=0; i<4; i++) {
-            for (let j=0; j<rows_en[i].length; j++) {
-                buttonRows[i].children[j].textContent=rows_en[i][j];
+            if (keyButtons.capsLock) {
+                for (let j=1; j<rows_en[i].length-1; j++) {
+                    buttonRows[i].children[j].textContent=rows_en[i][j].toUpperCase();
+                }
+            } else {
+                for (let j=1; j<rows_en[i].length-1; j++) {
+                    buttonRows[i].children[j].textContent=rows_en[i][j];
+                }
             }
+            buttonRows[0].children[0].textContent = '`';
         }
-        }
+    }
     buttonRows[3].children[11].innerHTML = '<i class="fa-solid fa-caret-up"></i>';
     keyButtons.shift = false;
 }
+
+function capsLockPressed() {
+    if (!document.getElementById('CapsLock').classList.contains('button-pressed')) {
+        for (let i=0; i<4; i++) {
+            for (let j=1; j<rows_en[i].length-1; j++) {
+                buttonRows[i].children[j].textContent=buttonRows[i].children[j].textContent.toLocaleLowerCase();
+            }
+        }
+        if (lang==='rus') buttonRows[0].children[0].textContent = 'ё';
+    } else {
+        for (let i=0; i<4; i++) {
+            for (let j=1; j<rows_en[i].length-1; j++) {
+                buttonRows[i].children[j].textContent=buttonRows[i].children[j].textContent.toLocaleUpperCase();
+            }
+        }
+        if (lang==='rus') buttonRows[0].children[0].textContent = 'Ё';
+    }
+    keyButtons.capsLock = !keyButtons.capsLock;
+    }
