@@ -66,7 +66,6 @@ function addRow (parent) {
 }
 
 function printText (id) {
-  console.log(id, typeof id)
   let caretPosition = textArea.selectionStart
   if (id === 'Tab') {
     textArea.innerHTML += '\t'
@@ -78,6 +77,9 @@ function printText (id) {
     return
   } else if (id === 'Enter') {
     textArea.innerHTML += '\n'
+    caretPosition++
+  } else if (id === 'Space') {
+    textArea.innerHTML += ' '
     caretPosition++
   } else if (id === 'Backspace') {
     if (caretPosition > 0) {
@@ -183,7 +185,6 @@ document.addEventListener('keyup', keyUnpressed)
 function keyPressed (event) {
   event.preventDefault()
   const code = event.code
-  console.log('keydown, code: ', code)
   if (document.getElementById(code) === null) return
   if (code === 'CapsLock') {
     document.getElementById(code).classList.toggle('button-pressed')
@@ -222,7 +223,6 @@ function keyUnpressed (event) {
 
 keyboard.addEventListener('mousedown', (event) => {
   const target = event.target.closest('.button')
-  console.log('mousedown', target)
   if (target) {
     if (target.id === 'CapsLock') {
       target.classList.toggle('button-pressed')
