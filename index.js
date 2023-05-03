@@ -1,4 +1,4 @@
-let lang = 'en';
+let lang = localStorage.getItem('lang') === undefined ? 'en' : localStorage.getItem('lang');
 
 const keyButtons = {
   shift: false,
@@ -65,29 +65,55 @@ textP.classList.add('prompt');
 textP.textContent = 'Press left Shift + Alt to switch language';
 document.querySelector('body').appendChild(textP);
 
-const buttonRows = document.querySelectorAll('.row');
-const buttons = document.querySelectorAll('.button');
-
 class Btn {
-  constructor(parent, char) {
+  constructor(char, code) {
+    this.char = char;
+    this.code = code;
+  }
+
+  addButton(parent) {
     const button = document.createElement('div');
     button.classList.add('button');
-    button.innerHTML = char;
+    button.innerHTML = this.char;
+    button.id = this.code;
     parent.appendChild(button);
   }
 }
-
-function getLanguage() {
-  lang = localStorage.getItem('lang') === undefined ? 'en' : localStorage.getItem('lang');
-}
-
-getLanguage();
 
 function addRow(parent) {
   const row = document.createElement('div');
   row.classList.add('row');
   parent.appendChild(row);
   return row;
+}
+
+for (let i = 0; i < 5; i += 1) {
+  const row = addRow(keyboard);
+  if (lang === 'en') {
+    for (let j = 0; j < rowsEn[i].length; j += 1) {
+      const button = new Btn(rowsEn[i][j], codes[i][j]);
+      button.addButton(row);
+    }
+  } else {
+    for (let j = 0; j < rowsRus[i].length; j += 1) {
+      const button = new Btn(rowsRus[i][j], codes[i][j]);
+      button.addButton(row);
+    }
+  }
+}
+
+const buttonRows = document.querySelectorAll('.row');
+const buttons = document.querySelectorAll('.button');
+
+for (let i = 0; i < buttons.length; i += 1) {
+  if (buttons[i].textContent === 'Shift'
+  || buttons[i].textContent === 'Enter'
+  || buttons[i].textContent === 'CapsLock'
+  || buttons[i].textContent === 'Backspace') {
+    buttons[i].classList.add('button-long');
+  } else if (buttons[i].innerHTML === '') {
+    buttons[i].classList.add('button-space');
+  }
 }
 
 function printText(id) {
@@ -101,7 +127,7 @@ function printText(id) {
         || id === 'CapsLock') {
     return;
   } else if (id === 'Enter') {
-    textArea.innerHTML += '\n';
+    textArea.innerHTML = `${textArea.innerHTML.slice(0, caretPosition)}\n${textArea.innerHTML.slice(caretPosition)}`;
     caretPosition += 1;
   } else if (id === 'Space') {
     textArea.innerHTML += ' ';
@@ -161,32 +187,6 @@ function switchLanguage() {
   buttonRows[3].children[11].innerHTML = '<i class="fa-solid fa-caret-up"></i>';
 
   setLanguage(lang);
-}
-
-for (let i = 0; i < 5; i += 1) {
-  const row = addRow(keyboard);
-  if (lang === 'en') {
-    for (let j = 0; j < rowsEn[i].length; j += 1) {
-      const button = new Btn(row, rowsEn[i][j]);
-      button.id = codes[i][j];
-    }
-  } else {
-    for (let j = 0; j < rowsRus[i].length; j += 1) {
-      const button = new Btn(row, rowsRus[i][j]);
-      button.id = codes[i][j];
-    }
-  }
-}
-
-for (let i = 0; i < buttons.length; i += 1) {
-  if (buttons[i].textContent === 'Shift'
-  || buttons[i].textContent === 'Enter'
-  || buttons[i].textContent === 'CapsLock'
-  || buttons[i].textContent === 'Backspace') {
-    buttons[i].classList.add('button-long');
-  } else if (buttons[i].innerHTML === '') {
-    buttons[i].classList.add('button-space');
-  }
 }
 
 function shiftPressed() {
@@ -287,40 +287,40 @@ function capsLockPressed() {
 
 function keyPressed(event) {
   event.preventDefault();
-  const { code } = event.code;
-  if (document.getElementById(code) === null) return;
-  if (code === 'CapsLock') {
-    document.getElementById(code).classList.toggle('button-pressed');
+  const id = event.code;
+  if (document.getElementById(id) === null) return;
+  if (id === 'CapsLock') {
+    document.getElementById(id).classList.toggle('button-pressed');
     capsLockPressed();
-  } else if (code.slice(0, 5) === 'Shift') {
-    document.getElementById(code).classList.add('button-pressed');
+  } else if (id.slice(0, 5) === 'Shift') {
+    document.getElementById(id).classList.add('button-pressed');
     shiftPressed();
-  } else if (code.slice(0, 3) === 'Alt') {
-    document.getElementById(code).classList.add('button-pressed');
+  } else if (id.slice(0, 3) === 'Alt') {
+    document.getElementById(id).classList.add('button-pressed');
     if (keyButtons.shift) {
       switchLanguage();
       return;
     }
     keyButtons.alt = true;
   } else {
-    document.getElementById(code).classList.add('button-pressed');
+    document.getElementById(id).classList.add('button-pressed');
   }
-  printText(code);
+  printText(id);
 }
 
 function keyUnpressed(event) {
-  const { code } = event.code;
-  if (document.getElementById(code) === null) return;
-  if (code === 'CapsLock') {
+  const id = event.code;
+  if (document.getElementById(id) === null) return;
+  if (id === 'CapsLock') {
     // nothing
-  } else if (code.slice(0, 5) === 'Shift') {
-    document.getElementById(code).classList.remove('button-pressed');
+  } else if (id.slice(0, 5) === 'Shift') {
+    document.getElementById(id).classList.remove('button-pressed');
     shiftUnpressed();
-  } else if (code.slice(0, 3) === 'Alt') {
-    document.getElementById(code).classList.remove('button-pressed');
+  } else if (id.slice(0, 3) === 'Alt') {
+    document.getElementById(id).classList.remove('button-pressed');
     keyButtons.alt = false;
   } else {
-    document.getElementById(code).classList.remove('button-pressed');
+    document.getElementById(id).classList.remove('button-pressed');
   }
 }
 
